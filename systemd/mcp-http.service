@@ -1,0 +1,13 @@
+[Unit]
+Description=MCP HTTP server on port 3030
+After=network-online.target
+
+[Service]
+Type=simple
+User=mcpbot
+WorkingDirectory=/opt/mcp/server
+ExecStart=/opt/mcp/venv/bin/python /opt/mcp/server/server.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

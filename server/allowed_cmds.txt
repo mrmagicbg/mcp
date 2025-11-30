@@ -1,0 +1,33 @@
+# =========================
+# Tier 1: Safe Monitoring & Info
+uptime
+df -h
+free -m
+who
+uname -a
+cat /etc/os-release
+
+# =========================
+# Tier 2: Developer Operations
+git clone
+git pull
+git status
+git commit -m
+git push
+pip install
+python3
+ls -l
+cat
+echo
+
+# =========================
+# Tier 3: Administrative Operations
+sudo apt update
+sudo apt upgrade -y
+sudo apt install -y git
+sudo apt install -y python3-pip
+sudo apt install -y build-essential
+sudo systemctl status
+sudo systemctl restart
+sudo systemctl stop
+sudo systemctl start
