@@ -75,18 +75,27 @@ curl http://localhost:3030/health
 Commands are restricted to those in `server/allowed_cmds.txt`. The file is organized in 4 tiers:
 
 **Tier 1: Safe Monitoring & Info**
-- `uptime`, `df -h`, `free -m`, `who`, `uname -a`, `cat /etc/os-release`
+- `uptime`, `df -h`, `df -i`, `free -m`, `free -h`, `who`, `uname -a`, `cat /etc/os-release`
+- `lscpu`, `lsb_release -a`, `date`, `ps aux`, `du -h`, `du -sh`
 
 **Tier 2: Developer Operations**
 - `git clone`, `git pull`, `git status`, `git commit -m`, `git push`
-- `pip install`, `python3`, `ls -l`, `cat`, `echo`
+- `git log --oneline -10`, `git diff --stat`, `git branch -a`
+- `pip install`, `pip list`, `python3`, `python3 -c`, `python3 -m pip`, `python3 -m venv`
+- `python3 -m pytest`, `python3 -m unittest discover`
+- `ls -l`, `ls -la`, `cat`, `echo`, `find`, `grep`, `head`, `tail`, `wc -l`
+- `make`, `sqlite3`, `tar -tzf`, `tar -xzf`, `gzip -l`
 
 **Tier 3: Administrative Operations**
 - `sudo apt update`, `sudo apt upgrade -y`, `sudo apt install -y ...`
+- `sudo apt list --installed`, `sudo apt search`
 - `sudo systemctl status`, `sudo systemctl restart`, `sudo systemctl stop`, `sudo systemctl start`
+- `sudo systemctl enable`, `sudo systemctl disable`, `sudo journalctl -u`
+- `id`, `whoami`
 
 **Tier 4: Network Operations** (Added for network discovery)
 - `ping -c 1`, `ping -c 3`, `arp -a`, `ip route`, `ip addr`, `hostname -I`
+- `nslookup`, `dig`, `traceroute`, `netstat -tlnp`, `ss -tlnp`
 
 **To modify the allowlist:**
 1. Edit `server/allowed_cmds.txt`

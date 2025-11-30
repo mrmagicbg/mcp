@@ -41,8 +41,18 @@ if __name__ == "__main__":
     success &= test_health()
     print()
 
-    # Test some allowlisted commands
-    allowlisted_cmds = ["uptime", "df -h", "who"]
+    # Test some allowlisted commands from different tiers
+    allowlisted_cmds = [
+        "uptime",           # Tier 1
+        "df -h",            # Tier 1
+        "free -h",          # Tier 1
+        "git status",       # Tier 2
+        "python3 --version", # Tier 2
+        "ls -l",            # Tier 2
+        "id",               # Tier 3
+        "ping -c 1 127.0.0.1", # Tier 4
+        "ip route"          # Tier 4
+    ]
     for cmd in allowlisted_cmds:
         success &= test_exec(cmd)
         print()
