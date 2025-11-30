@@ -1,0 +1,9 @@
+{
+  "mcp": {
+    "server": {
+      "url": "http://10.10.10.24:3030",
+      "name": "linuxOps",
+      "description": "MCP server for delegated safe operations on Ubuntu LXC container"
+    }
+  }
+}

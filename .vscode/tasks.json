@@ -1,0 +1,57 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Test MCP Server",
+      "type": "shell",
+      "command": "python3",
+      "args": ["test_server.py"],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Health Check",
+      "type": "shell",
+      "command": "curl",
+      "args": ["-s", "http://10.10.10.24:3030/health"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Run Remote Command",
+      "type": "shell",
+      "command": "python3",
+      "args": ["mcp_cmd.py", "${input:cmd}"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "cmd",
+      "description": "Enter an allowlisted command to run remotely",
+      "default": "uptime",
+      "type": "promptString"
+    }
+  ]
+}

@@ -31,3 +31,12 @@ sudo systemctl status
 sudo systemctl restart
 sudo systemctl stop
 sudo systemctl start
+
+# =========================
+# Tier 4: Network Operations
+ping -c 1
+ping -c 3
+arp -a
+ip route
+ip addr
+hostname -I
