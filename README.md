@@ -93,6 +93,12 @@ Commands are restricted to those in `server/allowed_cmds.txt`. The file is organ
 - `sudo systemctl enable`, `sudo systemctl disable`, `sudo journalctl -u`
 - `id`, `whoami`
 
+**Install and Package Management (prefixes allowed)**
+- `sudo apt install -y`, `apt install -y`, `sudo apt-get install -y`, `apt-get install -y`
+- `sudo apt remove -y`, `sudo apt purge -y`
+- `pip install`, `pip3 install`, `python3 -m pip install`, `sudo python3 -m pip install`
+- `dpkg -i`, `snap install`, `snap remove`
+
 **Tier 4: Network Operations** (Added for network discovery)
 - `ping -c 1`, `ping -c 3`, `arp -a`, `ip route`, `ip addr`, `hostname -I`
 - `nslookup`, `dig`, `traceroute`, `netstat -tlnp`, `ss -tlnp`

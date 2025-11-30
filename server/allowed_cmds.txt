@@ -66,6 +66,19 @@ sudo systemctl disable
 sudo journalctl -u
 id
 whoami
+sudo apt install -y
+apt install -y
+sudo apt-get install -y
+apt-get install -y
+sudo apt remove -y
+sudo apt purge -y
+pip3 install
+pip install
+python3 -m pip install
+sudo python3 -m pip install
+dpkg -i
+snap install
+snap remove
 
 # =========================
 # Tier 4: Network Operations
