@@ -26,7 +26,18 @@ def exec_allowlisted(payload: dict):
     cmd = payload.get("cmd", "")
     if not cmd:
         return JSONResponse({"error": "no cmd provided"}, status_code=400)
-    if cmd not in read_allowlist():
+    allowlist = read_allowlist()
+    # Allow exact matches or commands that start with an allowlist entry plus a space
+    def is_allowed(requested: str):
+        for a in allowlist:
+            if requested == a:
+                return True
+            # prefix match: allow 'ping -c' to match 'ping -c 1 10.10.10.1'
+            if requested.startswith(a + " "):
+                return True
+        return False
+
+    if not is_allowed(cmd):
         return JSONResponse({"error": f"DENIED: {cmd} not in allowlist"}, status_code=403)
     try:
         res = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=60)
