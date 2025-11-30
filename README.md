@@ -412,30 +412,36 @@ rm -rf /tmp/mcp
 
 ### Deployment Commands
 
-#### Quick Deployment (Recommended)
+#### Quick Deployment (On the MCP Server)
 ```bash
-# SSH to MCP server and run deployment
-ssh user@10.10.10.24 'curl -s https://raw.githubusercontent.com/mrmagicbg/mcp/main/deploy.sh | sudo bash'
+# On the MCP server (10.10.10.24), run:
+cd /tmp && git clone https://github.com/mrmagicbg/mcp.git && cd mcp && sudo bash deploy.sh
 ```
 
-#### Manual Deployment Steps
+#### Alternative: Download and Execute
 ```bash
-# 1. SSH to MCP server
-ssh user@10.10.10.24
+# On the MCP server, download and run directly:
+cd /tmp && wget https://github.com/mrmagicbg/mcp/archive/main.zip && unzip main.zip && cd mcp-main && sudo bash deploy.sh
+```
 
-# 2. Clone repository
+#### Manual Deployment Steps (On the MCP Server)
+```bash
+# 1. Clone repository
 cd /tmp
 git clone https://github.com/mrmagicbg/mcp.git
 cd mcp
 
-# 3. Run deployment
+# 2. Run deployment
 sudo bash deploy.sh
 
-# 4. Verify deployment
+# 3. Verify deployment
 curl http://localhost:3030/health
 curl -X POST -H "Content-Type: application/json" \
   -d '{"cmd":"python3 --version"}' \
   http://localhost:3030/exec
+
+# 4. Cleanup (optional)
+cd / && rm -rf /tmp/mcp
 ```
 
 #### Post-Deployment Testing
