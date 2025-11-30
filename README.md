@@ -410,22 +410,40 @@ cd /
 rm -rf /tmp/mcp
 ```
 
-### Post-Deployment Verification
+### Deployment Commands
 
+#### Quick Deployment (Recommended)
 ```bash
-# Check service status
-sudo systemctl status mcp-http.service
+# SSH to MCP server and run deployment
+ssh user@10.10.10.24 'curl -s https://raw.githubusercontent.com/mrmagicbg/mcp/main/deploy.sh | sudo bash'
+```
 
-# Test health endpoint
+#### Manual Deployment Steps
+```bash
+# 1. SSH to MCP server
+ssh user@10.10.10.24
+
+# 2. Clone repository
+cd /tmp
+git clone https://github.com/mrmagicbg/mcp.git
+cd mcp
+
+# 3. Run deployment
+sudo bash deploy.sh
+
+# 4. Verify deployment
 curl http://localhost:3030/health
-
-# Test a command
 curl -X POST -H "Content-Type: application/json" \
-  -d '{"cmd":"uptime"}' \
+  -d '{"cmd":"python3 --version"}' \
   http://localhost:3030/exec
+```
 
-# Check logs if issues
-sudo journalctl -u mcp-http.service -f
+#### Post-Deployment Testing
+```bash
+# From your local machine, test the deployed server
+python3 mcp_cmd.py "uptime"
+python3 mcp_cmd.py "python3 --version"
+python3 mcp_cmd.py "git status"
 ```
 
 ## License
