@@ -87,6 +87,7 @@ ping -c 3
 arp -a
 ip route
 ip addr
+ip neigh
 hostname -I
 nslookup
 dig

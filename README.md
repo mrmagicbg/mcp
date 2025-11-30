@@ -100,7 +100,7 @@ Commands are restricted to those in `server/allowed_cmds.txt`. The file is organ
 - `dpkg -i`, `snap install`, `snap remove`
 
 **Tier 4: Network Operations** (Added for network discovery)
-- `ping -c 1`, `ping -c 3`, `arp -a`, `ip route`, `ip addr`, `hostname -I`
+- `ping -c 1`, `ping -c 3`, `arp -a`, `ip neigh`, `ip route`, `ip addr`, `hostname -I`
 - `nslookup`, `dig`, `traceroute`, `netstat -tlnp`, `ss -tlnp`
 
 **To modify the allowlist:**
