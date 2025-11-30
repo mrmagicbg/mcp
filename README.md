@@ -320,6 +320,7 @@ sudo systemctl restart mcp-http.service
 - `server/server.py` - FastAPI application with /health and /exec endpoints
 - `server/allowed_cmds.txt` - Command allowlist organized in tiers
 - `setup.sh` - Automated installation script
+- `deploy.sh` - Automated deployment/update script
 - `systemd/mcp-http.service` - Systemd service configuration
 - `test_server.py` - Comprehensive test suite
 - `mcp_cmd.py` - CLI helper for remote command execution
@@ -355,22 +356,76 @@ def exec_allowlisted(payload: dict, api_key: str = Header(None)):
     # ... rest of function
 ```
 
-## Development
+## Deployment
 
-### Local Development
+### Automated Deployment
+
+The MCP server can update itself using the deployment script. SSH to the MCP server and run:
+
 ```bash
-# Clone and setup
-git clone <repo>
-cd mcp
-python3 -m venv venv
-source venv/bin/activate
-pip install fastapi uvicorn requests
+# SSH to MCP server
+ssh user@10.10.10.24
 
-# Run locally
-python3 server/server.py
+# Run deployment script
+sudo bash /path/to/deploy.sh
+```
+
+Or download and run directly:
+
+```bash
+# Download and run deployment script
+curl -s https://raw.githubusercontent.com/mrmagicbg/mcp/main/deploy.sh | sudo bash
+```
+
+The deployment script will:
+- Clone/update the repository
+- Install any missing dependencies
+- Update server files
+- Restart the MCP service
+- Test the deployment
+- Clean up temporary files
+
+### Manual Deployment
+
+If you prefer manual deployment:
+
+```bash
+# On the MCP server
+cd /tmp
+git clone https://github.com/mrmagicbg/mcp.git
+cd mcp
+
+# Update server files
+sudo cp -r server/* /opt/mcp/server/
+sudo chown -R mcpbot:mcpbot /opt/mcp/server
+
+# Restart service
+sudo systemctl restart mcp-http.service
 
 # Test
-python3 test_server.py
+curl http://localhost:3030/health
+
+# Cleanup
+cd /
+rm -rf /tmp/mcp
+```
+
+### Post-Deployment Verification
+
+```bash
+# Check service status
+sudo systemctl status mcp-http.service
+
+# Test health endpoint
+curl http://localhost:3030/health
+
+# Test a command
+curl -X POST -H "Content-Type: application/json" \
+  -d '{"cmd":"uptime"}' \
+  http://localhost:3030/exec
+
+# Check logs if issues
+sudo journalctl -u mcp-http.service -f
 ```
 
 ## License
