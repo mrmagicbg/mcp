@@ -6,7 +6,7 @@ set -euo pipefail
 
 # Configuration
 REPO_URL="https://github.com/mrmagicbg/mcp.git"
-REPO_DIR="/tmp/mcp-deploy"
+REPO_DIR="$HOME/mcp-deploy"
 MCP_BASE="/opt/mcp"
 SERVICE_NAME="mcp-http.service"
 

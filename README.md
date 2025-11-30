@@ -415,19 +415,19 @@ rm -rf /tmp/mcp
 #### Quick Deployment (On the MCP Server)
 ```bash
 # On the MCP server (10.10.10.24), run:
-cd /tmp && git clone https://github.com/mrmagicbg/mcp.git && cd mcp && sudo bash deploy.sh
+cd ~ && git clone https://github.com/mrmagicbg/mcp.git && cd mcp && sudo bash deploy.sh
 ```
 
 #### Alternative: Download and Execute
 ```bash
 # On the MCP server, download and run directly:
-cd /tmp && wget https://github.com/mrmagicbg/mcp/archive/main.zip && unzip main.zip && cd mcp-main && sudo bash deploy.sh
+cd ~ && wget https://github.com/mrmagicbg/mcp/archive/main.zip && unzip main.zip && cd mcp-main && sudo bash deploy.sh
 ```
 
 #### Manual Deployment Steps (On the MCP Server)
 ```bash
 # 1. Clone repository
-cd /tmp
+cd ~
 git clone https://github.com/mrmagicbg/mcp.git
 cd mcp
 
@@ -441,7 +441,7 @@ curl -X POST -H "Content-Type: application/json" \
   http://localhost:3030/exec
 
 # 4. Cleanup (optional)
-cd / && rm -rf /tmp/mcp
+cd ~ && rm -rf ~/mcp
 ```
 
 #### Post-Deployment Testing
