@@ -2,6 +2,97 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.0] - 2025-12-29
+
+### MAJOR: Complete Integration & Restructuring
+
+#### Changed
+- **BREAKING: Spec-Kit Integration Restructured**
+  - Moved from separate `/spec-kit/` subdirectory to root-level integrated structure
+  - Unified `setup.sh` now installs both FastAPI MCP server AND Spec-Kit together
+  - Unified `deploy.sh` handles deployment of both components in single pass
+  - Single `systemd/` directory contains all service files (mcp-http, spec-kit-web, spec-kit-mcp)
+  - Documentation moved from `/spec-kit/docs/` to `/docs/`
+
+- **Installation Process** - Now Unified
+  - `setup.sh` is comprehensive unified installer:
+    - Creates user and directories
+    - Installs system packages (python3, venv, pip, git, curl, build-essential)
+    - Creates Python virtual environment
+    - Installs FastAPI + Uvicorn + Flask dependencies
+    - Installs uv package manager
+    - Installs GitHub Spec-Kit via uv
+    - Copies both server implementations
+    - Copies Flask web UI with templates
+    - Installs ALL systemd services
+    - Enables and starts both services
+    - Provides comprehensive verification summary
+
+- **Deployment Process** - Now Unified
+  - `deploy.sh` unified deployer supporting both local and remote:
+    - Connects to target system via SSH
+    - Clones latest repository code
+    - Syncs both FastAPI and Flask components
+    - Updates all systemd service files
+    - Restarts all services in proper order
+    - Health checks both endpoints (3030 and 5000)
+    - Provides unified verification output
+
+- **Directory Structure** (Consolidated from `/spec-kit/` subdirectory)
+  - `/server/` - Contains both server.py and web/ subdirectory
+    - `server.py` - FastAPI MCP implementation
+    - `web/app.py` - Flask web UI backend
+    - `allowed_cmds.txt` - Command allowlist
+  - `/templates/` - Web UI assets at root level
+    - `index.html` - Rich web interface
+  - `/docs/` - Consolidated documentation
+    - `INSTALLATION.md` - Setup guide
+    - `DEPLOYMENT.md` - Deployment procedures
+    - `SPEC_KIT.md` - Spec-Kit feature overview
+  - `/systemd/` - All service files in one location
+    - `mcp-http.service` - FastAPI server
+    - `spec-kit-web.service` - Flask web UI
+    - `spec-kit-mcp.service` - MCP protocol interface
+
+#### Added
+- **Improved MCP Server for Agent Compatibility**
+  - Enhanced FastAPI endpoints for agent discovery
+  - `/mcp/tools` endpoint for tool definitions
+  - `/mcp/describe` endpoint for tool descriptions
+  - Improved JSON response format for agent parsing
+  - Better HTTP status codes and error messages
+
+- **Unified Documentation** 
+  - Updated README.md showing integrated architecture
+  - Clear architecture diagram with both components
+  - Single installation/deployment workflow described
+  - Port configuration documented (3030, 5000, stdio)
+  - Use cases for agent-based operations
+
+- **Setup & Deploy Enhancements**
+  - Progress indicators (▶ symbols) for better visibility
+  - Improved error handling and failure recovery
+  - Automatic service verification after deployment
+  - SSH-based remote deployment capability
+  - Local deployment support for same-system installs
+  - Proper cleanup of temporary files
+
+#### Fixed
+- Path handling in systemd services for integrated directory structure
+- Service startup order and dependency management
+- Port binding configuration for coexisting services (3030 FastAPI + 5000 Flask)
+- Documentation file paths and cross-references
+- Environment variable sourcing in service files
+
+#### Notes
+- **Major architectural change**: Spec-kit no longer separate subdir, fully merged
+- `setup.sh` and `deploy.sh` are now atomic - install/update both components
+- Services properly ordered: mcp-http.service starts first, then spec-kit services
+- Production deployment to 10.10.10.24 tested and verified
+- Backward compatible deployment approach (no breaking client API changes)
+
+---
+
 ## [2.0.0] - 2025-12-28
 
 ### Added

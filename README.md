@@ -1,53 +1,81 @@
-# MCP Server: Remote Command Execution & Integration Platform
+# MCP Server: Remote Command Execution + Spec-Kit Integration
 
 ## Overview
 
-The MCP (Model Context Protocol) Server provides multiple interfaces for remote operations and development toolkit integration on Ubuntu 24.04 LXC containers running on Proxmox. It enables safe, secure execution of commands and integration with GitHub Spec-Kit for spec-driven development.
+The **MCP (Model Context Protocol) Server** is a unified platform combining safe remote command execution with GitHub Spec-Kit integration. It provides multiple interfaces for AI agents, CI/CD systems, and development tools to interact with system operations and development workflows.
+
+**Integrated Architecture:**
+- **FastAPI Command Server** (port 3030) - MCP-compatible REST API for remote operations
+- **Spec-Kit MCP Server** (stdio) - Model Context Protocol interface to GitHub Spec-Kit
+- **Spec-Kit Web UI** (port 5000) - Browser-based interface for documentation/spec processing
+- **Unified Deployment** - Single setup.sh and deploy.sh for both components
+- **systemd Integration** - Production-ready service management
 
 **Core Features:**
-- FastAPI-based REST API for remote command execution
-- Command allowlisting for security (4 tiers)
-- 60-second command timeout with proper error handling
-- systemd service integration
-- VS Code integration with tasks and configuration
-- Comprehensive testing suite
-- CLI helper tools
-
-**Integrated Components:**
-- **Remote Command Server** - Execute allowlisted system commands safely
-- **Spec-Kit MCP Integration** - GitHub Spec-Kit accessible via Model Context Protocol
-- **Spec-Kit Web UI** - Browser-based interface for prompt processing
-- **systemd Services** - Production-ready service management
+- ✅ Command allowlisting (4 security tiers)
+- ✅ 60-second execution timeout with error handling
+- ✅ FastAPI REST endpoints with JSON responses
+- ✅ MCP protocol compatibility for AI agents
+- ✅ Spec-Kit integration for spec-driven development
+- ✅ Web UI for interactive prompt processing
+- ✅ Comprehensive test suite
+- ✅ CLI helper tools
 
 **Use Cases:**
-- Remote system monitoring and administration
+- Remote system monitoring and administration via API
 - Safe CI/CD operations and deployments
 - Development workflow automation
-- Network discovery and diagnostics
-- IDE and automation tool integration
-- Spec-driven development with GitHub Spec-Kit
+- AI agent operations and tool discovery
+- Spec-driven development workflows
+- Network diagnostics and maintenance
+
+## Architecture
+
+```
+MCP Server (Unified Installation)
+├── FastAPI HTTP Server (port 3030)
+│   ├── /health - Health check
+│   ├── /commands - List available commands
+│   ├── /execute - Execute allowed commands
+│   ├── /mcp/tools - Tool definitions for agents
+│   └── /mcp/describe - Tool descriptions
+├── Spec-Kit Web UI (port 5000)
+│   ├── /api/commands - REST API
+│   ├── /api/process - Spec processing
+│   └── /api/history - Execution history
+└── Spec-Kit MCP Server (stdio)
+    ├── MCP protocol endpoints
+    └── Spec-Kit tool execution
+```
 
 ## Installation & Setup
 
 ### Prerequisites
-- Ubuntu 24.04 LXC container on Proxmox
+- Ubuntu 24.04 LXC container on Proxmox (or any Ubuntu 24.04 system)
 - Root access for initial setup
-- Network connectivity to the container
+- Git and curl installed
 
-### Automated Installation
-1. Clone this repository to your local machine
-2. Copy the `server/` and `systemd/` directories to the target container
-3. Run the installer as root:
-   ```bash
-   sudo bash setup.sh
-   ```
-4. The installer will:
-   - Create `mcpbot` user with restricted permissions
-   - Set up Python virtual environment
-   - Install FastAPI and Uvicorn
-   - Copy server files to `/opt/mcp/`
-   - Install and enable systemd service
-   - Start the service on port 3030
+### Automated Installation (Recommended)
+
+Run the unified installer on the target system:
+
+```bash
+# On target system (as root)
+cd /opt/mcp
+git clone https://github.com/mrmagicbg/mcp.git .
+sudo bash setup.sh
+```
+
+The installer will:
+✅ Create `mrmagic` user with proper permissions
+✅ Set up Python 3.12 virtual environment
+✅ Install FastAPI, Uvicorn, Flask, and dependencies
+✅ Install uv package manager
+✅ Install GitHub Spec-Kit via uv
+✅ Copy server files to `/opt/mcp/server/` and `/opt/mcp/web/`
+✅ Copy templates to `/opt/mcp/templates/`
+✅ Configure both systemd services (mcp-http, spec-kit-web)
+✅ Start both services and verify
 
 ### Manual Installation
 If you prefer manual setup:
