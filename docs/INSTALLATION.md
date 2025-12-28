@@ -35,18 +35,18 @@ Complete step-by-step guide for installing and configuring Spec-Kit MCP integrat
 ```bash
 cd /home/mrmagic/Code/GitHub/mrmagicbg/
 git clone https://github.com/mrmagicbg/mcp
-cd mcp/spec-kit
+cd mcp
 ```
 
 ### 2. Run Installation Script
 
 ```bash
 # Copy to target server if not already there
-scp -r . user@10.10.10.24:/opt/mcp/spec-kit/
+scp -r . user@10.10.10.24:/opt/mcp/
 
 # On the target server
 ssh user@10.10.10.24
-cd /opt/mcp/spec-kit
+cd /opt/mcp
 
 # Make scripts executable
 chmod +x install.sh
@@ -126,18 +126,18 @@ python3 -c "import flask; print(flask.__version__)"
 
 ```bash
 # Create directory structure
-sudo mkdir -p /opt/mcp/spec-kit/{server,web,systemd}
+sudo mkdir -p /opt/mcp/{server,templates}
 
 # Copy files
-sudo cp server/server.py /opt/mcp/spec-kit/server/
-sudo cp web/app.py /opt/mcp/spec-kit/web/
-sudo cp -r web/templates /opt/mcp/spec-kit/web/
+sudo cp server/server.py /opt/mcp/server/
+sudo cp server/web/app.py /opt/mcp/server/web/
+sudo cp -r templates /opt/mcp/
 sudo cp systemd/*.service /etc/systemd/system/
 
 # Set permissions
-sudo chown -R mrmagic:mrmagic /opt/mcp/spec-kit
-chmod +x /opt/mcp/spec-kit/server/server.py
-chmod +x /opt/mcp/spec-kit/web/app.py
+sudo chown -R mrmagic:mrmagic /opt/mcp
+chmod +x /opt/mcp/server/server.py
+chmod +x /opt/mcp/server/web/app.py
 ```
 
 ### Step 5: Update Service Files
@@ -152,8 +152,8 @@ Ensure paths are correct:
 ```ini
 [Service]
 User=mrmagic
-WorkingDirectory=/opt/mcp/spec-kit/web
-ExecStart=/usr/bin/python3 /opt/mcp/spec-kit/web/app.py
+WorkingDirectory=/opt/mcp
+ExecStart=/opt/mcp/venv/bin/python /opt/mcp/server/web/app.py
 Environment="PATH=/home/mrmagic/.local/bin:/usr/local/bin:/usr/bin:/bin"
 ```
 
@@ -162,8 +162,8 @@ Do the same for `/etc/systemd/system/spec-kit-mcp.service`:
 ```ini
 [Service]
 User=mrmagic
-WorkingDirectory=/opt/mcp/spec-kit/server
-ExecStart=/usr/bin/python3 /opt/mcp/spec-kit/server/server.py
+WorkingDirectory=/opt/mcp
+ExecStart=/opt/mcp/venv/bin/python /opt/mcp/server/spec_kit_server.py
 Environment="PATH=/home/mrmagic/.local/bin:/usr/local/bin:/usr/bin:/bin"
 ```
 
@@ -189,7 +189,7 @@ sudo systemctl status spec-kit-web.service spec-kit-mcp.service
 
 ```bash
 # Allow port 5000 from trusted networks
-sudo ufw allow from 10.10.10.0/24 to any port 5000
+sudo ufw allow 5000/tcp
 
 # Allow SSH if needed
 sudo ufw allow from 10.10.10.0/24 to any port 22
@@ -210,7 +210,7 @@ curl -X POST http://localhost:5000/api/process \
   -d '{"command": "version", "args": []}'
 
 # Test MCP server (manually with input)
-echo '{"type": "initialize"}' | python3 /opt/mcp/spec-kit/server/server.py
+echo '{"type": "initialize"}' | /opt/mcp/venv/bin/python /opt/mcp/server/spec_kit_server.py
 ```
 
 ## Verification
@@ -344,7 +344,7 @@ sudo journalctl -u spec-kit-web.service -p err -f
 
 ```bash
 # Check file ownership
-ls -la /opt/mcp/spec-kit/
+ls -la /opt/mcp/
 
 # Should be owned by mrmagic:mrmagic
 

@@ -50,7 +50,7 @@ EOF
 
 ```bash
 ssh -i ~/.ssh/id_ed25519_mrmagicbg mrmagic@10.10.10.24 << 'EOF'
-sudo mkdir -p /opt/mcp/spec-kit/{server,web,systemd}
+sudo mkdir -p /opt/mcp/{server,templates}
 sudo chown -R mrmagic:mrmagic /opt/mcp
 ls -la /opt/mcp/
 EOF
@@ -72,8 +72,8 @@ EOF
 
 ```bash
 ssh -i ~/.ssh/id_ed25519_mrmagicbg mrmagic@10.10.10.24 << 'EOF'
-ls -la /opt/mcp/spec-kit/
-ls -la /opt/mcp/spec-kit/{server,web,systemd}/
+ls -la /opt/mcp/
+ls -la /opt/mcp/{server,templates}/
 EOF
 ```
 
@@ -114,7 +114,7 @@ EOF
 
 ```bash
 ssh -i ~/.ssh/id_ed25519_mrmagicbg mrmagic@10.10.10.24 << 'EOF'
-sudo cp /opt/mcp/spec-kit/systemd/*.service /etc/systemd/system/
+sudo cp /opt/mcp/systemd/*.service /etc/systemd/system/
 sudo systemctl daemon-reload
 ls -la /etc/systemd/system/spec-kit-*.service
 EOF
@@ -124,9 +124,9 @@ EOF
 
 ```bash
 ssh -i ~/.ssh/id_ed25519_mrmagicbg mrmagic@10.10.10.24 << 'EOF'
-chmod +x /opt/mcp/spec-kit/server/server.py
-chmod +x /opt/mcp/spec-kit/web/app.py
-ls -la /opt/mcp/spec-kit/{server,web}/{server.py,app.py}
+chmod +x /opt/mcp/server/server.py
+chmod +x /opt/mcp/server/web/app.py
+ls -la /opt/mcp/server/{server.py,web/app.py}
 EOF
 ```
 

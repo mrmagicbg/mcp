@@ -13,20 +13,15 @@ This module provides:
 ### Components
 
 ```
-spec-kit/
-├── server/                    # MCP server implementation
-│   └── server.py             # stdio-based MCP protocol handler
-├── web/                       # Flask web application
-│   ├── app.py                # Flask application and API endpoints
-│   └── templates/
-│       └── index.html        # Rich web UI (HTML/CSS/JS)
-├── systemd/                   # systemd service files
-│   ├── spec-kit-mcp.service  # MCP server service
-│   └── spec-kit-web.service  # Web UI service
-├── docs/                      # Documentation
-├── README.md                 # This file
-├── INSTALLATION.md           # Detailed installation guide
-└── DEPLOYMENT.md             # Deployment instructions
+server/
+├── spec_kit_server.py        # stdio-based MCP protocol handler
+├── web/                      # Flask web application
+│   └── app.py                # Flask application and API endpoints
+templates/
+└── index.html                # Rich web UI (HTML/CSS/JS)
+systemd/
+├── spec-kit-mcp.service      # MCP server service (placeholder)
+└── spec-kit-web.service      # Web UI service
 ```
 
 ## Quick Start
@@ -42,22 +37,17 @@ spec-kit/
 #### Automated (Recommended)
 
 ```bash
-# Copy spec-kit directory to target server
-scp -r spec-kit/ user@server:/opt/mcp/
-
-# On the target server
-cd /opt/mcp/spec-kit
-sudo bash install.sh
+./setup.sh  # Unified installer (run on target as root)
 ```
 
 #### Manual
 
 1. **Copy files:**
    ```bash
-   sudo cp spec-kit/server/server.py /opt/mcp/spec-kit/server/
-   sudo cp spec-kit/web/app.py /opt/mcp/spec-kit/web/
-   sudo cp -r spec-kit/web/templates /opt/mcp/spec-kit/web/
-   sudo cp spec-kit/systemd/*.service /etc/systemd/system/
+  sudo cp server/spec_kit_server.py /opt/mcp/server/
+  sudo cp server/web/app.py /opt/mcp/server/web/
+  sudo cp -r templates /opt/mcp/
+  sudo cp systemd/*.service /etc/systemd/system/
    ```
 
 2. **Install dependencies:**
@@ -98,7 +88,7 @@ Available commands:
 
 ### MCP Server
 
-**Path:** `/opt/mcp/spec-kit/server/server.py`
+**Path:** `/opt/mcp/server/spec_kit_server.py`
 
 Exposed Tools:
 
@@ -181,8 +171,8 @@ specify init /path/to/project
 
 - **Type:** Simple (stdio transport)
 - **User:** mrmagic
-- **Working Dir:** `/home/mrmagic/mcp-server-spec-kit`
-- **Command:** `python3 /home/mrmagic/mcp-server-spec-kit/server.py`
+- **Working Dir:** `/opt/mcp`
+- **Command:** `/opt/mcp/venv/bin/python /opt/mcp/server/spec_kit_server.py`
 - **Auto-restart:** On failure with 10s delay
 - **Auto-start:** Yes (enabled)
 
@@ -190,9 +180,9 @@ specify init /path/to/project
 
 - **Type:** Simple (HTTP server)
 - **User:** mrmagic
-- **Working Dir:** `/home/mrmagic/mcp-server-spec-kit`
+- **Working Dir:** `/opt/mcp`
 - **Port:** 5000
-- **Command:** `python3 /home/mrmagic/mcp-server-spec-kit/app.py`
+- **Command:** `/opt/mcp/venv/bin/python /opt/mcp/server/web/app.py`
 - **Auto-restart:** On failure with 10s delay
 - **Auto-start:** Yes (enabled)
 
