@@ -1,6 +1,6 @@
-# Spec-Kit MCP Installation Guide
+# MCP Server Installation Guide
 
-Complete step-by-step guide for installing and configuring Spec-Kit MCP integration.
+Complete step-by-step guide for installing and configuring the unified MCP (Model Context Protocol) Server with Spec-Kit integration.
 
 ## Table of Contents
 
@@ -13,20 +13,22 @@ Complete step-by-step guide for installing and configuring Spec-Kit MCP integrat
 ## Prerequisites
 
 ### Server Requirements
-- Ubuntu 20.04 or later
-- Python 3.11 or later
-- 100MB free disk space
-- Network access to target port (5000 for web, 22 for SSH)
+- Ubuntu 24.04 LXC container (or any Ubuntu 24.04+ system)
+- Python 3.12 or later
+- 200MB free disk space
+- Root or sudo access for setup
 
 ### Software Requirements
 - uv package manager (for installing spec-kit)
 - git (for cloning repo)
-- sudo access (for systemd service installation)
+- curl (for verification)
+- build-essential (for Python compilation)
 
 ### Network Requirements
-- Port 5000 available (configurable)
+- Port 3030 available (MCP HTTP API)
+- Port 5000 available (Spec-Kit Web UI)
 - Port 22 for SSH management
-- Internet access for initial uv/pip installation
+- Internet access for pip/uv installation
 
 ## Quick Install
 
@@ -38,35 +40,31 @@ git clone https://github.com/mrmagicbg/mcp
 cd mcp
 ```
 
-### 2. Run Installation Script
+### 2. Run Unified Installation Script
 
 ```bash
-# Copy to target server if not already there
-scp -r . user@10.10.10.24:/opt/mcp/
-
-# On the target server
-ssh user@10.10.10.24
+# Clone repo on target server
+ssh root@10.10.10.24
 cd /opt/mcp
+git clone https://github.com/mrmagicbg/mcp .
 
-# Make scripts executable
-chmod +x install.sh
-
-# Run installer
-sudo bash install.sh
+# Run unified installer (installs both MCP HTTP and Spec-Kit)
+sudo bash setup.sh
 ```
 
 ### 3. Verify Installation
 
 ```bash
-# Check services are running
-sudo systemctl status spec-kit-web.service spec-kit-mcp.service
+# Check all services are running
+sudo systemctl status mcp-http.service spec-kit-web.service spec-kit-mcp.service
 
-# Test web UI
+# Test MCP HTTP API
+curl http://localhost:3030/health
+curl http://localhost:3030/api/health
+curl http://localhost:3030/commands
+
+# Test Spec-Kit Web UI
 curl http://localhost:5000/api/commands
-
-# Test spec-kit
-source ~/.local/bin/env
-specify version
 ```
 
 ## Detailed Installation
@@ -109,108 +107,70 @@ source ~/.local/bin/env
 specify --version
 ```
 
-### Step 3: Install Flask
+### Step 3: Install Python Dependencies via requirements.txt
+
+The unified `setup.sh` installs dependencies from `requirements.txt` which pins versions for stability:
 
 ```bash
-# Option A: System package (recommended for system service)
-sudo apt-get install -y python3-flask
+# View pinned dependencies
+cat requirements.txt
 
-# Option B: via pip
-sudo pip3 install flask
-
-# Verify
-python3 -c "import flask; print(flask.__version__)"
+# Output:
+# fastapi==0.122.0
+# uvicorn[standard]==0.38.0
+# flask==3.1.2
+# requests==2.32.5
+# starlette==0.50.0
+# pydantic==2.12.5
 ```
 
-### Step 4: Copy MCP Spec-Kit Files
+### Step 4: Unified Setup Workflow
+
+The `setup.sh` script is comprehensive and handles:
+1. Creating `mrmagic` user with proper permissions
+2. Setting up Python 3.12 virtual environment
+3. Installing all dependencies from `requirements.txt`
+4. Installing uv package manager
+5. Installing GitHub Spec-Kit via uv
+6. Copying server files (FastAPI and Flask)
+7. Copying web UI templates
+8. Installing all systemd services (mcp-http, spec-kit-web, spec-kit-mcp)
+9. Starting and verifying all services
+
+**No manual service file editing needed.**
+
+### Step 5: Configure Firewall (If Enabled)
 
 ```bash
-# Create directory structure
-sudo mkdir -p /opt/mcp/{server,templates}
+# Allow MCP HTTP API (port 3030)
+sudo ufw allow from 10.10.10.0/24 to any port 3030
 
-# Copy files
-sudo cp server/server.py /opt/mcp/server/
-sudo cp server/web/app.py /opt/mcp/server/web/
-sudo cp -r templates /opt/mcp/
-sudo cp systemd/*.service /etc/systemd/system/
-
-# Set permissions
-sudo chown -R mrmagic:mrmagic /opt/mcp
-chmod +x /opt/mcp/server/server.py
-chmod +x /opt/mcp/server/web/app.py
-```
-
-### Step 5: Update Service Files
-
-Edit `/etc/systemd/system/spec-kit-web.service`:
-
-```bash
-sudo nano /etc/systemd/system/spec-kit-web.service
-```
-
-Ensure paths are correct:
-```ini
-[Service]
-User=mrmagic
-WorkingDirectory=/opt/mcp
-ExecStart=/opt/mcp/venv/bin/python /opt/mcp/server/web/app.py
-Environment="PATH=/home/mrmagic/.local/bin:/usr/local/bin:/usr/bin:/bin"
-```
-
-Do the same for `/etc/systemd/system/spec-kit-mcp.service`:
-
-```ini
-[Service]
-User=mrmagic
-WorkingDirectory=/opt/mcp
-ExecStart=/opt/mcp/venv/bin/python /opt/mcp/server/spec_kit_server.py
-Environment="PATH=/home/mrmagic/.local/bin:/usr/local/bin:/usr/bin:/bin"
-```
-
-### Step 6: Enable and Start Services
-
-```bash
-# Reload systemd configuration
-sudo systemctl daemon-reload
-
-# Enable services to auto-start
-sudo systemctl enable spec-kit-web.service
-sudo systemctl enable spec-kit-mcp.service
-
-# Start services
-sudo systemctl start spec-kit-web.service
-sudo systemctl start spec-kit-mcp.service
-
-# Verify they're running
-sudo systemctl status spec-kit-web.service spec-kit-mcp.service
-```
-
-### Step 7: Configure Firewall (If Enabled)
-
-```bash
-# Allow port 5000 from trusted networks
-sudo ufw allow 5000/tcp
+# Allow Spec-Kit Web UI (port 5000)
+sudo ufw allow from 10.10.10.0/24 to any port 5000
 
 # Allow SSH if needed
 sudo ufw allow from 10.10.10.0/24 to any port 22
 
-# Verify rules
+# Enable and verify
+sudo ufw enable
 sudo ufw status
 ```
 
-### Step 8: Test Installation
+### Step 6: Test Installation
 
 ```bash
-# Test web API
-curl http://localhost:5000/api/commands | python3 -m json.tool
+# Test MCP HTTP API
+curl http://localhost:3030/health
+curl http://localhost:3030/api/health
+curl http://localhost:3030/commands | python3 -m json.tool | head -20
 
-# Test version command
-curl -X POST http://localhost:5000/api/process \
+# Test Spec-Kit Web API
+curl http://localhost:5000/api/commands | python3 -m json.tool | head -20
+
+# Test command execution
+curl -X POST http://localhost:3030/exec \
   -H "Content-Type: application/json" \
-  -d '{"command": "version", "args": []}'
-
-# Test MCP server (manually with input)
-echo '{"type": "initialize"}' | /opt/mcp/venv/bin/python /opt/mcp/server/spec_kit_server.py
+  -d '{"cmd": "uptime"}'
 ```
 
 ## Verification
@@ -218,16 +178,21 @@ echo '{"type": "initialize"}' | /opt/mcp/venv/bin/python /opt/mcp/server/spec_ki
 ### Service Status Check
 
 ```bash
-# Check both services
-sudo systemctl status spec-kit-web.service spec-kit-mcp.service
+# Check all services
+sudo systemctl status mcp-http.service spec-kit-web.service spec-kit-mcp.service
 
-# Expected output should show "active (running)"
+# Expected output should show "active (running)" for all three
 ```
 
 ### Port Verification
 
 ```bash
-# Check web UI port
+# Check MCP API port
+sudo ss -tlnp | grep 3030
+
+# Expected: LISTEN 0.0.0.0:3030
+
+# Check Web UI port
 sudo ss -tlnp | grep 5000
 
 # Expected: LISTEN 0.0.0.0:5000
