@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spec-Kit Web UI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        h1 {
+            grid-column: 1 / -1;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 14px;
+            color: #999;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+
+        .section h2 {
+            font-size: 16px;
+            color: #667eea;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            background: white;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: 'Monaco', 'Courier New', monospace;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #e8e8e8;
+        }
+
+        .btn-copy {
+            background: #e8f4f8;
+            color: #0088cc;
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        .btn-copy:hover {
+            background: #d0e8f0;
+        }
+
+        .output-section {
+            margin-top: 20px;
+        }
+
+        .output-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            border: 1px solid #333;
+        }
+
+        .output-box.error {
+            border-left: 3px solid #f44747;
+            background: #3a2222;
+        }
+
+        .output-box.success {
+            border-left: 3px solid #4ec9b0;
+            background: #1e3a2a;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-indicator.success {
+            background: #4ec9b0;
+        }
+
+        .status-indicator.error {
+            background: #f44747;
+        }
+
+        .status-indicator.loading {
+            background: #ffd700;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .history-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        .history-item:hover {
+            background: #f5f5f5;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .history-item-time {
+            color: #999;
+            font-size: 11px;
+        }
+
+        .history-item-command {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .commands-list {
+            list-style: none;
+        }
+
+        .commands-list li {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .commands-list li strong {
+            color: #667eea;
+        }
+
+        .commands-list li p {
+            margin-top: 5px;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .loading {
+            display: inline-block;
+            opacity: 0.5;
+        }
+
+        .empty-state {
+            color: #999;
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4ec9b0;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 6px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.error {
+            background: #f44747;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            ███████╗██████╗ ███████╗ ██████╗██╗███████╗██╗   ██╗
+            <br>
+            ██╔════╝██╔══██╗██╔════╝██╔════╝██║██╔════╝╚██╗ ██╔╝
+            <br>
+            ███████╗██████╔╝█████╗  ██║     ██║█████╗   ╚████╔╝
+            <br>
+            ╚════██║██╔═══╝ ██╔══╝  ██║     ██║██╔══╝    ╚██╔╝
+            <br>
+            ███████║██║     ███████╗╚██████╗██║██║        ██║
+            <br>
+            ╚══════╝╚═╝     ╚══════╝ ╚═════╝╚═╝╚═╝        ╚═╝
+        </div>
+
+        <h1>Spec-Kit Web Interface</h1>
+
+        <div class="section">
+            <h2>Available Commands</h2>
+            <ul class="commands-list" id="commands-list">
+                <li class="empty-state">Loading commands...</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Process Command</h2>
+            <form id="command-form">
+                <div class="form-group">
+                    <label for="command">Command</label>
+                    <select id="command" name="command" required>
+                        <option value="">Select a command...</option>
+                        <option value="check">check</option>
+                        <option value="version">version</option>
+                        <option value="init">init</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="args">Arguments (optional, one per line)</label>
+                    <textarea id="args" name="args" placeholder="Path or other arguments..."></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn-primary" id="submit-btn">Execute Command</button>
+                    <button type="reset" class="btn-secondary">Clear Form</button>
+                </div>
+
+                <div class="output-section" id="output-section" style="display: none;">
+                    <label>Output</label>
+                    <div class="output-box" id="output-box"></div>
+                    <div class="button-group" style="margin-top: 10px;">
+                        <button type="button" class="btn-copy" id="copy-btn">Copy Output</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="section">
+            <h2>Command History</h2>
+            <div id="history-list" class="empty-state">No commands executed yet</div>
+            <div class="button-group" style="margin-top: 15px;">
+                <button type="button" class="btn-secondary" id="clear-history-btn">Clear History</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Status</h2>
+            <div style="font-size: 13px; color: #666; line-height: 1.6;">
+                <p><span class="status-indicator success"></span> System Status: <strong>Ready</strong></p>
+                <p><span class="status-indicator success"></span> Spec-Kit: <strong>Installed</strong></p>
+                <p><span class="status-indicator success"></span> MCP Server: <strong>Running</strong></p>
+                <p id="server-time" style="margin-top: 15px; font-size: 12px; color: #999;"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const commandForm = document.getElementById('command-form');
+        const commandSelect = document.getElementById('command');
+        const argsTextarea = document.getElementById('args');
+        const submitBtn = document.getElementById('submit-btn');
+        const outputSection = document.getElementById('output-section');
+        const outputBox = document.getElementById('output-box');
+        const copyBtn = document.getElementById('copy-btn');
+        const historyList = document.getElementById('history-list');
+        const clearHistoryBtn = document.getElementById('clear-history-btn');
+        const commandsList = document.getElementById('commands-list');
+        const serverTimeEl = document.getElementById('server-time');
+
+        // Load available commands
+        async function loadCommands() {
+            try {
+                const response = await fetch('/api/commands');
+                const data = await response.json();
+                
+                commandsList.innerHTML = data.commands.map(cmd => `
+                    <li>
+                        <strong>${cmd.name}</strong>
+                        <p>${cmd.description}</p>
+                    </li>
+                `).join('');
+            } catch (error) {
+                showNotification('Failed to load commands: ' + error.message, 'error');
+            }
+        }
+
+        // Submit command
+        commandForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const command = commandSelect.value;
+            const args = argsTextarea.value.trim().split('\n').filter(a => a.trim());
+            
+            if (!command) {
+                showNotification('Please select a command', 'error');
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="status-indicator loading"></span>Executing...';
+            
+            try {
+                const response = await fetch('/api/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ command, args })
+                });
+                
+                const result = await response.json();
+                
+                outputSection.style.display = 'block';
+                const output = result.stdout || result.stderr || 'No output';
+                outputBox.textContent = output;
+                
+                if (result.success) {
+                    outputBox.className = 'output-box success';
+                    showNotification('Command executed successfully', 'success');
+                } else {
+                    outputBox.className = 'output-box error';
+                    showNotification('Command failed: ' + result.stderr, 'error');
+                }
+                
+                loadHistory();
+            } catch (error) {
+                outputSection.style.display = 'block';
+                outputBox.textContent = 'Error: ' + error.message;
+                outputBox.className = 'output-box error';
+                showNotification('Failed to execute command: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Execute Command';
+            }
+        });
+
+        // Copy output
+        copyBtn.addEventListener('click', () => {
+            const text = outputBox.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Output copied to clipboard', 'success');
+            }).catch(err => {
+                showNotification('Failed to copy: ' + err.message, 'error');
+            });
+        });
+
+        // Load history
+        async function loadHistory() {
+            try {
+                const response = await fetch('/api/history');
+                const data = await response.json();
+                
+                if (data.history.length === 0) {
+                    historyList.innerHTML = '<div class="empty-state">No commands executed yet</div>';
+                } else {
+                    historyList.innerHTML = data.history.reverse().map((item, idx) => {
+                        const time = new Date(item.timestamp).toLocaleTimeString();
+                        const success = item.result.returncode === 0 ? 'success' : 'error';
+                        return `
+                            <div class="history-item" onclick="loadHistoryItem('${item.timestamp}')">
+                                <span class="status-indicator ${success}"></span>
+                                <span class="history-item-command">${item.command}</span>
+                                <span class="history-item-time">${time}</span>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (error) {
+                historyList.innerHTML = '<div class="empty-state">Failed to load history</div>';
+            }
+        }
+
+        // Clear history
+        clearHistoryBtn.addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to clear all history?')) return;
+            
+            try {
+                await fetch('/api/clear-history', { method: 'POST' });
+                loadHistory();
+                showNotification('History cleared', 'success');
+            } catch (error) {
+                showNotification('Failed to clear history: ' + error.message, 'error');
+            }
+        });
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
+
+        // Update server time
+        function updateServerTime() {
+            const now = new Date();
+            serverTimeEl.textContent = `Last updated: ${now.toLocaleTimeString()}`;
+        }
+
+        // Initial loads
+        loadCommands();
+        loadHistory();
+        updateServerTime();
+        setInterval(updateServerTime, 1000);
+    </script>
+</body>
+</html>
