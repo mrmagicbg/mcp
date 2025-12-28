@@ -4,13 +4,15 @@ Web UI for GitHub Spec-Kit
 Provides a browser interface for prompt processing with spec-kit
 """
 
+import os
 import subprocess
 import json
 from pathlib import Path
 from flask import Flask, render_template, request, jsonify
 from datetime import datetime
 
-app = Flask(__name__)
+TEMPLATES_DIR = Path(os.environ.get("MCP_TEMPLATES_DIR", "/opt/mcp/templates"))
+app = Flask(__name__, template_folder=str(TEMPLATES_DIR))
 app.config['JSON_SORT_KEYS'] = False
 
 # Session storage for prompts (in-memory, could be extended to use database)
@@ -160,6 +162,6 @@ def clear_history():
     return jsonify({"success": True, "message": "History cleared"})
 
 if __name__ == '__main__':
-    # Create templates directory if needed
-    Path('templates').mkdir(exist_ok=True)
+    # Ensure templates directory exists
+    TEMPLATES_DIR.mkdir(parents=True, exist_ok=True)
     app.run(host='0.0.0.0', port=5000, debug=False)
