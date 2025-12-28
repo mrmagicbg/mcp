@@ -66,9 +66,38 @@ class MCPServer:
             args = []
         
         try:
+            # Validate command is whitelisted
+            valid_commands = {'init', 'check', 'version', 'help'}
+            if command not in valid_commands:
+                return {
+                    "success": False,
+                    "stdout": "",
+                    "stderr": f"Unknown command: {command}. Valid commands: {valid_commands}",
+                    "returncode": 1
+                }
+            
+            # Validate args - check for shell injection attempts
+            for arg in args:
+                if not isinstance(arg, str):
+                    return {
+                        "success": False,
+                        "stdout": "",
+                        "stderr": "All arguments must be strings",
+                        "returncode": 1
+                    }
+                # Block dangerous shell metacharacters
+                if any(c in arg for c in ['|', '&', ';', '$', '`', '\n', '\r']):
+                    return {
+                        "success": False,
+                        "stdout": "",
+                        "stderr": f"Invalid characters in argument: {arg}",
+                        "returncode": 1
+                    }
+            
             # Build command - ensure uv environment is sourced
             cmd = f"source ~/.local/bin/env && specify {command}"
             if args:
+                # Use shlex.quote for safe argument quoting (if needed in future)
                 cmd += " " + " ".join(args)
             
             result = subprocess.run(

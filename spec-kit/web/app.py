@@ -88,31 +88,55 @@ def get_commands():
 @app.route('/api/process', methods=['POST'])
 def process_prompt():
     """Process a spec-kit command"""
-    data = request.get_json()
-    command = data.get('command', '').strip()
-    args = data.get('args', [])
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Request body must be JSON"}), 400
+        
+        command = data.get('command', '').strip()
+        args = data.get('args', [])
+        
+        if not command:
+            return jsonify({"error": "Command is required"}), 400
+        
+        # Validate command is a known spec-kit command
+        valid_commands = ['check', 'version', 'init', 'help']
+        if command not in valid_commands and command != 'help':
+            return jsonify({"error": f"Unknown command: {command}. Valid: {valid_commands}"}), 400
+        
+        # Validate args is a list
+        if not isinstance(args, list):
+            return jsonify({"error": "args must be an array"}), 400
+        
+        # Validate each arg is a string and doesn't contain shell metacharacters
+        for arg in args:
+            if not isinstance(arg, str):
+                return jsonify({"error": "Each arg must be a string"}), 400
+            # Basic check for dangerous shell characters
+            if any(c in arg for c in ['|', '&', ';', '$', '`', '\n']):
+                return jsonify({"error": f"Invalid characters in argument: {arg}"}), 400
+        
+        # Run the command
+        result = run_specify_command(command, args)
+        
+        # Store in history
+        history_entry = {
+            "timestamp": datetime.now().isoformat(),
+            "command": command,
+            "args": args,
+            "result": result
+        }
+        prompts_history.append(history_entry)
+        
+        return jsonify({
+            "success": result["success"],
+            "stdout": result["stdout"],
+            "stderr": result["stderr"],
+            "returncode": result["returncode"]
+        })
     
-    if not command:
-        return jsonify({"error": "Command is required"}), 400
-    
-    # Run the command
-    result = run_specify_command(command, args)
-    
-    # Store in history
-    history_entry = {
-        "timestamp": datetime.now().isoformat(),
-        "command": command,
-        "args": args,
-        "result": result
-    }
-    prompts_history.append(history_entry)
-    
-    return jsonify({
-        "success": result["success"],
-        "stdout": result["stdout"],
-        "stderr": result["stderr"],
-        "returncode": result["returncode"]
-    })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/history', methods=['GET'])
 def get_history():
