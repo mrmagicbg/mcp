@@ -69,6 +69,11 @@ def health():
     """Simple health probe for the web UI"""
     return jsonify({"status": "ok", "service": "spec-kit-web"})
 
+@app.route('/api/health', methods=['GET', 'HEAD'])
+def api_health():
+    """Alias for monitoring tools that expect /api/health"""
+    return jsonify({"status": "ok", "service": "spec-kit-web"})
+
 @app.route('/api/commands', methods=['GET'])
 def get_commands():
     """Get available spec-kit commands"""

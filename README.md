@@ -36,11 +36,14 @@ The **MCP (Model Context Protocol) Server** is a unified platform combining safe
 MCP Server (Unified Installation)
 ├── FastAPI HTTP Server (port 3030)
 │   ├── /health - Health check
-│   ├── /commands - List available commands
-│   ├── /execute - Execute allowed commands
+│   ├── /api/health - Health alias
+│   ├── /commands - List allowlisted commands
+│   ├── /exec - Execute allowlisted commands
 │   ├── /mcp/tools - Tool definitions for agents
 │   └── /mcp/describe - Tool descriptions
 ├── Spec-Kit Web UI (port 5000)
+│   ├── /health - Health check
+│   ├── /api/health - Health alias
 │   ├── /api/commands - REST API
 │   ├── /api/process - Spec processing
 │   └── /api/history - Execution history

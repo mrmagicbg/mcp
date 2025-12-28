@@ -3,6 +3,7 @@ import subprocess
 from pathlib import Path
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse
 import uvicorn
 
 SERVER_NAME = "linuxOps"
@@ -20,6 +21,17 @@ def read_allowlist():
 @app.get("/health")
 def health():
     return {"status": "ok", "server": SERVER_NAME}
+
+@app.get("/api/health")
+def api_health():
+    # Alias for monitoring tools that expect /api/health
+    return {"status": "ok", "server": SERVER_NAME}
+
+@app.get("/commands")
+def list_commands():
+    """Return the configured allowlisted commands."""
+    cmds = read_allowlist()
+    return {"commands": cmds, "count": len(cmds)}
 
 @app.post("/exec")
 def exec_allowlisted(payload: dict):
