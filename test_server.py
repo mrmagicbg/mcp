@@ -6,8 +6,10 @@ Tests /health and /exec endpoints with allowlisted commands.
 
 import requests
 import json
+import os
+import sys
 
-SERVER_URL = "http://10.10.10.24:3030"
+SERVER_URL = os.environ.get("SERVER_URL", "http://10.10.10.24:3030")
 
 def test_health():
     try:
@@ -34,6 +36,10 @@ def test_exec(cmd):
         return False
 
 if __name__ == "__main__":
+    # Optional URL override via first argument
+    if len(sys.argv) >= 2 and sys.argv[1].startswith("http"):
+        SERVER_URL = sys.argv[1]
+
     print("Testing MCP server at", SERVER_URL)
     print()
 

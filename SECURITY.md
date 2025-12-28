@@ -211,14 +211,14 @@ Talisman(app,
 
 ```bash
 # Run services with minimal permissions
-# In systemd service file:
+# In systemd service files:
 [Service]
-User=spec-kit-user
+User=mrmagic
 NoNewPrivileges=yes
 PrivateTmp=yes
 ProtectSystem=strict
 ProtectHome=yes
-ReadWritePaths=/opt/mcp/spec-kit
+ReadWritePaths=/opt/mcp
 ```
 
 #### 8. Dependency Management
@@ -300,9 +300,11 @@ pip-audit
 
 5. **Backup configuration:**
    ```bash
-   sudo tar -czf /opt/backup/spec-kit-config.tar.gz \
-     /etc/systemd/system/spec-kit-* \
-     /opt/mcp/spec-kit
+sudo tar -czf /opt/backup/mcp-config.tar.gz \
+    /etc/systemd/system/mcp-http.service \
+    /etc/systemd/system/spec-kit-web.service \
+    /etc/systemd/system/spec-kit-mcp.service \
+    /opt/mcp
    ```
 
 ### For Developers

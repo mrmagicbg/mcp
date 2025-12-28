@@ -70,6 +70,9 @@ All notable changes to this project will be documented in this file.
   - Use cases for agent-based operations
 
 - **Setup & Deploy Enhancements**
+   - **Health & Admin**
+     - Added `/health` endpoint to Spec-Kit web UI for monitoring
+     - Added Admin Guide (`docs/ADMIN.md`) covering ops, firewall, services, and troubleshooting
   - Progress indicators (▶ symbols) for better visibility
   - Improved error handling and failure recovery
   - Automatic service verification after deployment

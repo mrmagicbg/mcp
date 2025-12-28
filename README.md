@@ -10,6 +10,7 @@ The **MCP (Model Context Protocol) Server** is a unified platform combining safe
 - **Spec-Kit Web UI** (port 5000) - Browser-based interface for documentation/spec processing
 - **Unified Deployment** - Single setup.sh and deploy.sh for both components
 - **systemd Integration** - Production-ready service management
+ - **Health Endpoints** - MCP: `/health`, Web UI: `/health`
 
 **Core Features:**
 - ✅ Command allowlisting (4 security tiers)
@@ -64,6 +65,9 @@ Run the unified installer on the target system:
 cd /opt/mcp
 git clone https://github.com/mrmagicbg/mcp.git .
 sudo bash setup.sh
+
+# See admin operations guide
+# docs/ADMIN.md
 ```
 
 The installer will:
@@ -76,6 +80,7 @@ The installer will:
 ✅ Copy templates to `/opt/mcp/templates/`
 ✅ Configure both systemd services (mcp-http, spec-kit-web)
 ✅ Start both services and verify
+✅ Expose health endpoints for monitoring
 
 ### Manual Installation
 If you prefer manual setup:

@@ -64,6 +64,11 @@ def index():
     """Render main page"""
     return render_template('index.html')
 
+@app.route('/health', methods=['GET', 'HEAD'])
+def health():
+    """Simple health probe for the web UI"""
+    return jsonify({"status": "ok", "service": "spec-kit-web"})
+
 @app.route('/api/commands', methods=['GET'])
 def get_commands():
     """Get available spec-kit commands"""
