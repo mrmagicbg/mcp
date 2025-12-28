@@ -6,6 +6,12 @@ This document outlines security measures, best practices, and considerations for
 
 ## Current Security Model
 
+### API Surface
+
+- Health endpoints: `/health`, `/api/health` (read-only; for monitoring)
+- Command execution: `/exec` (POST; allowlisted commands only)
+- Command discovery: `/commands` (GET; lists allowlisted commands)
+
 ### Command Allowlisting
 
 **Remote Command Server (FastAPI):**

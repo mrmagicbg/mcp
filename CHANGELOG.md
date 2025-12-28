@@ -94,6 +94,24 @@ All notable changes to this project will be documented in this file.
 - Production deployment to 10.10.10.24 tested and verified
 - Backward compatible deployment approach (no breaking client API changes)
 
+## [3.0.1] - 2025-12-28
+
+### Changed
+- Pinned Python dependencies in `requirements.txt` for stability:
+  - fastapi==0.122.0, uvicorn[standard]==0.38.0, flask==3.1.2, requests==2.32.5
+  - starlette==0.50.0, pydantic==2.12.5
+- `setup.sh` now installs dependencies via `requirements.txt` when present.
+- Expanded `test_server.py` to verify `/api/health` and summarize `/commands`.
+- `SECURITY.md` updated with API surface summary (`/health`, `/api/health`, `/exec`, `/commands`).
+
+### Added
+- `mcp_cmd.py` new flags:
+  - `--health` to check `/api/health`
+  - `--list` to fetch and print allowlisted commands from `/commands`
+
+### Verification
+- Redeployed to 10.10.10.24 and confirmed endpoint health and command list.
+
 ---
 
 ## [2.0.0] - 2025-12-28

@@ -23,6 +23,18 @@ def test_health():
         print(f"❌ /health failed: {e}")
         return False
 
+def test_api_health():
+    try:
+        response = requests.get(f"{SERVER_URL}/api/health")
+        response.raise_for_status()
+        data = response.json()
+        print("✅ /api/health endpoint:")
+        print(json.dumps(data, indent=2))
+        return True
+    except Exception as e:
+        print(f"❌ /api/health failed: {e}")
+        return False
+
 def test_exec(cmd):
     try:
         response = requests.post(f"{SERVER_URL}/exec", json={"cmd": cmd})
@@ -35,6 +47,18 @@ def test_exec(cmd):
         print(f"❌ /exec with '{cmd}' failed: {e}")
         return False
 
+def test_commands():
+    try:
+        response = requests.get(f"{SERVER_URL}/commands")
+        response.raise_for_status()
+        data = response.json()
+        print("✅ /commands endpoint:")
+        print(json.dumps({"count": data.get("count"), "sample": (data.get("commands") or [])[:10]}, indent=2))
+        return True
+    except Exception as e:
+        print(f"❌ /commands failed: {e}")
+        return False
+
 if __name__ == "__main__":
     # Optional URL override via first argument
     if len(sys.argv) >= 2 and sys.argv[1].startswith("http"):
@@ -45,6 +69,7 @@ if __name__ == "__main__":
 
     success = True
     success &= test_health()
+    success &= test_api_health()
     print()
 
     # Test some allowlisted commands from different tiers
@@ -62,6 +87,8 @@ if __name__ == "__main__":
     for cmd in allowlisted_cmds:
         success &= test_exec(cmd)
         print()
+
+    success &= test_commands()
 
     if success:
         print("🎉 All tests passed!")

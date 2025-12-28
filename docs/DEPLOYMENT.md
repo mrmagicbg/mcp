@@ -156,16 +156,17 @@ ssh -i ~/.ssh/id_ed25519_mrmagicbg mrmagic@10.10.10.24 << 'EOF'
 echo "=== Service Status ==="
 sudo systemctl is-active spec-kit-web.service
 sudo systemctl is-active spec-kit-mcp.service
+sudo systemctl is-active mcp-http.service
 
 echo "=== Port Check ==="
-sudo ss -tlnp | grep -E '5000|22'
+sudo ss -tlnp | grep -E '5000|3030|22'
 
 echo "=== Process Check ==="
 ps aux | grep -E 'app.py|server.py' | grep -v grep
 EOF
 ```
 
-#### 4.2 API Functionality Test
+#### 4.2 API Functionality Test (Web)
 
 ```bash
 ssh -i ~/.ssh/id_ed25519_mrmagicbg mrmagic@10.10.10.24 << 'EOF'
@@ -176,6 +177,19 @@ echo "=== API Version Test ==="
 curl -s -X POST http://localhost:5000/api/process \
   -H "Content-Type: application/json" \
   -d '{"command": "version", "args": []}' | python3 -m json.tool | head -10
+EOF
+```
+
+#### 4.3 MCP API Health & Commands
+
+```bash
+ssh -i ~/.ssh/id_ed25519_mrmagicbg mrmagic@10.10.10.24 << 'EOF'
+echo "=== MCP Health ==="
+curl -s http://localhost:3030/health | python3 -m json.tool
+curl -s http://localhost:3030/api/health | python3 -m json.tool
+
+echo "=== MCP Commands ==="
+curl -s http://localhost:3030/commands | python3 -m json.tool | head -20
 EOF
 ```
 

@@ -39,7 +39,13 @@ if [ ! -d "$VENV_DIR" ]; then
 	python3 -m venv "$VENV_DIR"
 fi
 "$VENV_DIR/bin/python" -m pip install --upgrade pip setuptools wheel
-"$VENV_DIR/bin/python" -m pip install fastapi uvicorn requests flask || true
+if [ -f ./requirements.txt ]; then
+	echo "▶ Installing Python dependencies from requirements.txt..."
+	"$VENV_DIR/bin/python" -m pip install -r ./requirements.txt || true
+else
+	echo "▶ Installing core Python dependencies (no requirements.txt found)..."
+	"$VENV_DIR/bin/python" -m pip install fastapi uvicorn requests flask || true
+fi
 
 # Install uv for spec-kit
 echo "▶ Installing uv package manager..."

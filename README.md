@@ -10,7 +10,7 @@ The **MCP (Model Context Protocol) Server** is a unified platform combining safe
 - **Spec-Kit Web UI** (port 5000) - Browser-based interface for documentation/spec processing
 - **Unified Deployment** - Single setup.sh and deploy.sh for both components
 - **systemd Integration** - Production-ready service management
- - **Health Endpoints** - MCP: `/health`, Web UI: `/health`
+ - **Health Endpoints** - MCP: `/health`, `/api/health`; Web UI: `/health`, `/api/health`
 
 **Core Features:**
 - ✅ Command allowlisting (4 security tiers)
@@ -177,6 +177,17 @@ Returns server status and name.
 }
 ```
 
+#### GET /api/health
+Health alias for monitoring tools.
+
+**Response:**
+```json
+{
+  "status": "ok",
+  "server": "linuxOps"
+}
+```
+
 #### POST /exec
 Executes an allowlisted command.
 
@@ -208,12 +219,24 @@ Executes an allowlisted command.
 - `403`: Command not in allowlist
 - `504`: Command timeout (60s)
 
+#### GET /commands
+Lists all allowlisted commands available for `/exec`.
+
+**Response:**
+```json
+{
+  "commands": ["uptime", "df -h", "free -h", "..."],
+  "count": 85
+}
+```
+
 ## Usage Examples
 
 ### Command Line
 ```bash
 # Health check
 curl http://10.10.10.24:3030/health
+curl http://10.10.10.24:3030/api/health
 
 # Execute command
 curl -X POST -H "Content-Type: application/json" \
@@ -226,6 +249,8 @@ curl -X POST -H "Content-Type: application/json" \
   http://10.10.10.24:3030/exec
 
 # Using the helper script
+python3 mcp_cmd.py --health
+python3 mcp_cmd.py --list
 python3 mcp_cmd.py "df -h"
 python3 mcp_cmd.py "ping -c 3 8.8.8.8"
 python3 mcp_cmd.py "arp -a"
@@ -287,7 +312,9 @@ python3 test_server.py
 
 This runs tests for:
 - Health endpoint
+- Health alias endpoint
 - Multiple allowlisted commands across all tiers
+- Commands discovery endpoint
 - Error handling for denied commands
 
 ### Manual Testing
