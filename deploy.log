@@ -1,0 +1,49 @@
+==========================================
+MCP + Spec-Kit Unified Deployment
+==========================================
+
+Target: mrmagic@10.10.10.24
+
+▶ Connecting to 10.10.10.24...
+▶ Cloning repository on target...
+▶ Creating MCP directories...
+▶ Syncing code files...
+▶ Installing Python dependencies...
+Requirement already satisfied: fastapi in /opt/mcp/venv/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (0.122.0)
+Requirement already satisfied: uvicorn in /opt/mcp/venv/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (0.38.0)
+Requirement already satisfied: starlette<0.51.0,>=0.40.0 in /opt/mcp/venv/lib/python3.12/site-packages (from fastapi->-r requirements.txt (line 1)) (0.50.0)
+Requirement already satisfied: pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4 in /opt/mcp/venv/lib/python3.12/site-packages (from fastapi->-r requirements.txt (line 1)) (2.12.5)
+Requirement already satisfied: typing-extensions>=4.8.0 in /opt/mcp/venv/lib/python3.12/site-packages (from fastapi->-r requirements.txt (line 1)) (4.15.0)
+Requirement already satisfied: annotated-doc>=0.0.2 in /opt/mcp/venv/lib/python3.12/site-packages (from fastapi->-r requirements.txt (line 1)) (0.0.4)
+Requirement already satisfied: annotated-types>=0.6.0 in /opt/mcp/venv/lib/python3.12/site-packages (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi->-r requirements.txt (line 1)) (0.7.0)
+Requirement already satisfied: pydantic-core==2.41.5 in /opt/mcp/venv/lib/python3.12/site-packages (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi->-r requirements.txt (line 1)) (2.41.5)
+Requirement already satisfied: typing-inspection>=0.4.2 in /opt/mcp/venv/lib/python3.12/site-packages (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi->-r requirements.txt (line 1)) (0.4.2)
+Requirement already satisfied: anyio<5,>=3.6.2 in /opt/mcp/venv/lib/python3.12/site-packages (from starlette<0.51.0,>=0.40.0->fastapi->-r requirements.txt (line 1)) (4.12.0)
+Requirement already satisfied: idna>=2.8 in /opt/mcp/venv/lib/python3.12/site-packages (from anyio<5,>=3.6.2->starlette<0.51.0,>=0.40.0->fastapi->-r requirements.txt (line 1)) (3.11)
+Requirement already satisfied: click>=7.0 in /opt/mcp/venv/lib/python3.12/site-packages (from uvicorn->-r requirements.txt (line 2)) (8.3.1)
+Requirement already satisfied: h11>=0.8 in /opt/mcp/venv/lib/python3.12/site-packages (from uvicorn->-r requirements.txt (line 2)) (0.16.0)
+▶ Updating systemd services...
+▶ Fixing service paths...
+▶ Reloading systemd and restarting services...
+▶ Cleaning up remote temp files...
+
+==========================================
+Deployment Verification
+==========================================
+
+Service Status (10.10.10.24):
+     Loaded: loaded (/etc/systemd/system/mcp-http.service; enabled; preset: enabled)
+     Active: active (running) since Sun 2025-12-28 19:37:04 UTC; 2s ago
+
+Testing endpoints (10.10.10.24)...
+{
+  "status": "ok",
+  "server": "linuxOps"
+}
+⚠ Spec-Kit web not responding
+
+✅ Deployment complete!
+
+Access points:
+  • MCP API: http://10.10.10.24:3030
+  • Spec-Kit Web: http://10.10.10.24:5000

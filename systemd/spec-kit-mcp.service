@@ -6,7 +6,7 @@ Documentation=https://github.com/github/spec-kit
 [Service]
 Type=simple
 User=mrmagic
-WorkingDirectory=/home/mrmagic/mcp-server-spec-kit
+WorkingDirectory=/opt/mcp
 Environment="PATH=/home/mrmagic/.local/bin:/usr/local/bin:/usr/bin:/bin"
 # MCP servers run via stdio transport when called by agents
 # This service keeps the server script available but doesn't run it as a daemon

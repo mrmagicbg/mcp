@@ -7,9 +7,9 @@ StartLimitInterval=60
 [Service]
 Type=simple
 User=mrmagic
-WorkingDirectory=/home/mrmagic/mcp-server-spec-kit
+WorkingDirectory=/opt/mcp
 Environment="PATH=/home/mrmagic/.local/bin:/usr/local/bin:/usr/bin:/bin"
-ExecStart=/usr/bin/python3 /home/mrmagic/mcp-server-spec-kit/app.py
+ExecStart=/opt/mcp/venv/bin/python /opt/mcp/server/web/app.py
 Restart=on-failure
 RestartSec=10
 

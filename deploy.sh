@@ -3,17 +3,30 @@ set -euo pipefail
 
 # Unified Deployer for MCP + Spec-Kit
 # Syncs latest code and restarts both services
-# Usage: ./deploy.sh [target_ip] or run on target as root
-
-TARGET="${1:-10.10.10.24}"
-REPO_URL="https://github.com/mrmagicbg/mcp.git"
-REPO_DIR="/tmp/mcp-deploy-$$"
-MCP_BASE="/opt/mcp"
+# Usage: ./deploy.sh [user] [ip_address]
 
 echo "=========================================="
 echo "MCP + Spec-Kit Unified Deployment"
 echo "=========================================="
-echo "Target: $TARGET"
+echo ""
+
+# Prompt for user if not provided
+if [ ${1:-} ]; then
+	MCP_USER="$1"
+else
+	read -p "Enter SSH user (default: mrmagic): " MCP_USER
+	MCP_USER="${MCP_USER:-mrmagic}"
+fi
+
+# Prompt for target IP if not provided
+if [ ${2:-} ]; then
+	TARGET="$2"
+else
+	read -p "Enter target IP address (default: 10.10.10.24): " TARGET
+	TARGET="${TARGET:-10.10.10.24}"
+fi
+
+echo "Target: $MCP_USER@$TARGET"
 echo ""
 
 # Cleanup function
@@ -22,9 +35,13 @@ cleanup() {
 }
 trap cleanup EXIT
 
+REPO_URL="https://github.com/mrmagicbg/mcp.git"
+REPO_DIR="/tmp/mcp-deploy-$$"
+MCP_BASE="/opt/mcp"
+
 # SSH helper
 ssh_cmd() {
-	ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 "root@$TARGET" "$@" 2>/dev/null || return 1
+	ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 "$MCP_USER@$TARGET" "$@" 2>/dev/null || return 1
 }
 
 # Deploy via SSH to remote target
@@ -53,16 +70,16 @@ deploy_remote() {
 	fi
 	
 	echo "▶ Updating systemd services..."
-	ssh_cmd "cd $REPO_DIR && cp -a systemd/*.service /etc/systemd/system/ 2>/dev/null || true"
+	ssh_cmd "cd $REPO_DIR && sudo cp -a systemd/*.service /etc/systemd/system/ 2>/dev/null || true"
 	
 	echo "▶ Fixing service paths..."
-	ssh_cmd "sed -i 's|/home/mrmagic|$MCP_BASE|g' /etc/systemd/system/spec-kit-*.service 2>/dev/null || true"
+	ssh_cmd "sudo sed -i 's|/home/mrmagic|$MCP_BASE|g' /etc/systemd/system/spec-kit-*.service 2>/dev/null || true"
 	
 	echo "▶ Reloading systemd and restarting services..."
-	ssh_cmd "systemctl daemon-reload"
-	ssh_cmd "systemctl restart mcp-http.service" || echo "⚠ mcp-http.service had issues"
-	ssh_cmd "systemctl restart spec-kit-web.service" || echo "⚠ spec-kit-web.service had issues"
-	ssh_cmd "systemctl restart spec-kit-mcp.service" || echo "⚠ spec-kit-mcp.service had issues"
+	ssh_cmd "sudo systemctl daemon-reload"
+	ssh_cmd "sudo systemctl restart mcp-http.service" || echo "⚠ mcp-http.service had issues"
+	ssh_cmd "sudo systemctl restart spec-kit-web.service" || echo "⚠ spec-kit-web.service had issues"
+	ssh_cmd "sudo systemctl restart spec-kit-mcp.service" || echo "⚠ spec-kit-mcp.service had issues"
 	
 	echo "▶ Cleaning up remote temp files..."
 	ssh_cmd "rm -rf $REPO_DIR" || true
