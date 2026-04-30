@@ -59,10 +59,12 @@ deploy_remote() {
 	echo "▶ Creating MCP directories..."
 	ssh_cmd "mkdir -p $MCP_BASE/server $MCP_BASE/web $MCP_BASE/templates"
 	
-	echo "▶ Syncing code files..."
+	echo "▶ Syncing code files (preserving config)..."
 	ssh_cmd "cd $REPO_DIR && cp -a server/*.py $MCP_BASE/server/ 2>/dev/null || true"
 	ssh_cmd "cd $REPO_DIR && cp -a server/web/* $MCP_BASE/server/web/ 2>/dev/null || true"
 	ssh_cmd "cd $REPO_DIR && cp -a templates/* $MCP_BASE/templates/ 2>/dev/null || true"
+	# Preserve allowed_cmds.txt if it exists on target; bootstrap from repo if missing
+	ssh_cmd "[ -f $MCP_BASE/server/allowed_cmds.txt ] || cp -a $REPO_DIR/server/allowed_cmds.txt $MCP_BASE/server/allowed_cmds.txt 2>/dev/null || true"
 	
 	echo "▶ Installing Python dependencies..."
 	if [ -f requirements.txt ]; then
@@ -97,10 +99,12 @@ deploy_local() {
 	echo "▶ Creating directories..."
 	mkdir -p "$MCP_BASE/server" "$MCP_BASE/web" "$MCP_BASE/templates"
 	
-	echo "▶ Copying files..."
+	echo "▶ Copying files (preserving config)..."
 	cp -a server/*.py "$MCP_BASE/server/" 2>/dev/null || true
 	cp -a server/web/* "$MCP_BASE/server/web/" 2>/dev/null || true
 	cp -a templates/* "$MCP_BASE/templates/" 2>/dev/null || true
+	# Preserve allowed_cmds.txt if it exists on target; bootstrap from repo if missing
+	[ -f "$MCP_BASE/server/allowed_cmds.txt" ] || cp -a server/allowed_cmds.txt "$MCP_BASE/server/allowed_cmds.txt" 2>/dev/null || true
 	
 	echo "▶ Installing Python dependencies..."
 	if [ -f requirements.txt ] && [ -d "$MCP_BASE/venv" ]; then
