@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Security
+- **Fixed shell injection vulnerability** in `server/server.py`: Changed from `shell=True` to `shell=False` with `shlex.split()` for command execution. Even with allowlisting, shell=True permitted exploitation via pipes/backticks in arguments.
+
+### Added
+- **API key authentication**: Set `MCP_API_KEY` environment variable to require `X-API-Key` header on all requests. Optional — when unset, server behaves as before (open access).
+- **Request audit logging**: All HTTP requests are now logged with client IP, method, path, and status code to `/opt/mcp/server/audit.log` and stdout.
+- **Auth denial logging**: Failed authentication attempts are logged at WARNING level.
+
 ## [3.0.0] - 2025-12-29
 
 ### MAJOR: Complete Integration & Restructuring

@@ -1,8 +1,10 @@
 import os
+import shlex
 import subprocess
+import logging
+from datetime import datetime
 from pathlib import Path
-from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 import uvicorn
 
@@ -11,7 +13,40 @@ SAFE_BASE = Path("/opt/mcp/safefs").resolve()
 ALLOWLIST_FILE = Path("/opt/mcp/server/allowed_cmds.txt").resolve()
 SAFE_BASE.mkdir(parents=True, exist_ok=True)
 
+# API key authentication (optional — set MCP_API_KEY env var to enable)
+API_KEY = os.environ.get("MCP_API_KEY", "")
+
+# Request logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler("/opt/mcp/server/audit.log", mode="a"),
+    ]
+)
+logger = logging.getLogger("mcp-http")
+
 app = FastAPI()
+
+
+@app.middleware("http")
+async def auth_and_logging_middleware(request: Request, call_next):
+    """Validate API key (if configured) and log all requests."""
+    client_ip = request.client.host if request.client else "unknown"
+    method = request.method
+    path = request.url.path
+
+    # Enforce API key if MCP_API_KEY is set
+    if API_KEY:
+        provided_key = request.headers.get("X-API-Key", "")
+        if provided_key != API_KEY:
+            logger.warning(f"AUTH_DENIED ip={client_ip} method={method} path={path}")
+            return JSONResponse({"error": "unauthorized"}, status_code=401)
+
+    response = await call_next(request)
+    logger.info(f"ip={client_ip} method={method} path={path} status={response.status_code}")
+    return response
 
 def read_allowlist():
     if not ALLOWLIST_FILE.exists():
@@ -52,9 +87,13 @@ def exec_allowlisted(payload: dict):
     if not is_allowed(cmd):
         return JSONResponse({"error": f"DENIED: {cmd} not in allowlist"}, status_code=403)
     try:
-        res = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=60)
+        # Use shell=False with shlex to prevent shell injection
+        args = shlex.split(cmd)
+        logger.info(f"EXEC cmd={cmd}")
+        res = subprocess.run(args, shell=False, capture_output=True, text=True, timeout=60)
         return {"stdout": res.stdout, "stderr": res.stderr, "returncode": res.returncode}
     except subprocess.TimeoutExpired:
+        logger.warning(f"TIMEOUT cmd={cmd}")
         return JSONResponse({"error": "command timeout"}, status_code=504)
 
 if __name__ == "__main__":
